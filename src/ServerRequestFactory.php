@@ -4,22 +4,12 @@ namespace Http\Factory\Slim;
 
 use Interop\Http\Factory\ServerRequestFactoryInterface;
 use Psr\Http\Message\UriInterface;
-use Slim\Http\FactoryDefault;
+use Slim\Http\Environment;
 use Slim\Http\Headers;
 use Slim\Http\Request as ServerRequest;
 
 class ServerRequestFactory implements ServerRequestFactoryInterface
 {
-    /**
-     * @var FactoryDefault
-     */
-    private $factoryDefault;
-
-    public function __construct()
-    {
-        $this->factoryDefault = new FactoryDefault();
-    }
-
     public function createServerRequest($method, $uri)
     {
         if (!$uri instanceof UriInterface) {
@@ -44,7 +34,8 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         $post = $_POST;
         $_POST = [];
 
-        $request = $this->factoryDefault->makeRequest($server);
+        $environment = new Environment($server);
+        $request = ServerRequest::createFromEnvironment($environment);
 
         // Restore POST
         $_POST = $post;
